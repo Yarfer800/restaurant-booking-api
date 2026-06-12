@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Env
+.env
+
+# Local databases
+*.db
+
+# Docs (внутренние спеки, не для публичных репозиториев)
+docs/
+
+# Misc
+.DS_Store
+*.log
