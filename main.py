@@ -4,13 +4,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from config import config
+from core.db import session_manager
 
 logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    session_manager.init()
     yield
+    await session_manager.close()
 
 
 def create_app() -> FastAPI:
