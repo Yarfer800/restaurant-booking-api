@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from config import config
 from core.db import session_manager
+from core.exceptions import register_exception_handlers
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
         version='0.1.0',
         lifespan=lifespan,
     )
+    register_exception_handlers(app)
 
     @app.get('/health', tags=['health'], summary='Проверка работоспособности')
     async def health() -> dict[str, str]:
