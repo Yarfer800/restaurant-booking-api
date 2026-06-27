@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from config import config
 from core.db import session_manager
 from core.exceptions import register_exception_handlers
+from core.redis import redis_service
 
 logging.basicConfig(level=logging.INFO)
 
@@ -13,7 +14,9 @@ logging.basicConfig(level=logging.INFO)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     session_manager.init()
+    await redis_service.connect()
     yield
+    await redis_service.close()
     await session_manager.close()
 
 
