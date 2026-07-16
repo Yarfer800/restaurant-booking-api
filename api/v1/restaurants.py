@@ -52,6 +52,9 @@ async def create_restaurant(
     session: Annotated[AsyncSession, Depends(get_session)],
     _admin: Annotated[bool, Depends(get_current_admin)],
 ) -> RestaurantOut:
+    if data.opening_time >= data.closing_time:
+        raise ValidationError('Время открытия должно быть раньше времени закрытия')
+
     repository = RestaurantRepository(session)
     restaurant = await repository.create(data)
     await session.commit()
