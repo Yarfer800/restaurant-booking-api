@@ -1,10 +1,11 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_admin, get_session
-from core.exceptions import NotFoundError
+from core.exceptions import ConflictError, NotFoundError
 from repositories.restaurant import RestaurantRepository
 from schemas.table import TableCreate, TableOut, TableUpdate
 
@@ -28,7 +29,11 @@ async def create_table(
     if restaurant is None:
         raise NotFoundError("Ресторан не найден")
 
-    table = await repository.add_table(restaurant_id, data.number, data.capacity)
+    try:
+        table = await repository.add_table(restaurant_id, data.number, data.capacity)
+    except IntegrityError:
+        await session.rollback()
+        raise ConflictError("Стол с таким номером уже есть в этом ресторане") from None
     await session.commit()
     await session.refresh(table)
     return TableOut.model_validate(table)

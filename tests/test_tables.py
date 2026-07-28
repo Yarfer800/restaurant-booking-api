@@ -51,7 +51,8 @@ async def test_duplicate_table_number_in_restaurant(client: AsyncClient) -> None
 
     await create_table(client, restaurant_id, headers, number="1")
     resp = await create_table(client, restaurant_id, headers, number="1")
-    assert resp.status_code == 500
+    assert resp.status_code == 409
+    assert "уже есть" in resp.json()["detail"]
 
 
 async def test_update_table(client: AsyncClient) -> None:
